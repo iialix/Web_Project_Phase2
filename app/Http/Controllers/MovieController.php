@@ -75,11 +75,22 @@ class MovieController extends Controller
             'poster'      => 'nullable|image|mimes:jpeg,png,webp|max:5120',
         ]);
 
+        // Handle poster: uploaded file, TMDB URL, or none
+        $posterFilename = null;
+
+        if ($request->hasFile('poster')) {
+            $file = $request->file('poster');
+            $posterFilename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $file->extension();
+            $file->storeAs('public/uploads', $posterFilename);
+        } elseif ($request->filled('tmdb_poster_url')) {
+            $posterFilename = $this->downloadTmdbPoster($request->input('tmdb_poster_url'));
+        }
+
         $movie = Movie::create([
             'name'        => $validated['name'],
             'categories'  => $validated['categories'],
             'description' => $validated['description'],
-            'poster'      => $validated['poster'] ?? null,
+            'poster'      => $posterFilename,
         ]);
 
         return redirect()->route('movies.show', $movie->id)
@@ -164,11 +175,20 @@ class MovieController extends Controller
             'poster'      => 'nullable|image|mimes:jpeg,png,webp|max:5120',
         ]);
 
+        // Handle poster: uploaded file or keep existing
+        $posterFilename = $movie->poster;
+
+        if ($request->hasFile('poster')) {
+            $file = $request->file('poster');
+            $posterFilename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $file->extension();
+            $file->storeAs('public/uploads', $posterFilename);
+        }
+
         $movie->update([
             'name'        => $validated['name'],
             'categories'  => $validated['categories'],
             'description' => $validated['description'],
-            'poster'      => $validated['poster'] ?? $movie->poster,
+            'poster'      => $posterFilename,
         ]);
 
         return redirect()->route('movies.show', $id)
@@ -221,5 +241,41 @@ class MovieController extends Controller
         }
 
         return view('movies.index', compact('movies', 'wishlistIds', 'query'));
+    }
+
+    /**
+     * Download a poster image from a TMDB URL and store it locally.
+     */
+    private function downloadTmdbPoster(string $url): ?string
+    {
+        if (!preg_match('/^https:\/\/image\.tmdb\.org\/t\/p\//', $url)) {
+            return null;
+        }
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $imageData = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$imageData) {
+            return null;
+        }
+
+        $ext = 'jpg';
+        if (strpos($contentType, 'image/png') !== false) {
+            $ext = 'png';
+        } elseif (strpos($contentType, 'image/webp') !== false) {
+            $ext = 'webp';
+        }
+
+        $filename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+        \Illuminate\Support\Facades\Storage::put('public/uploads/' . $filename, $imageData);
+
+        return $filename;
     }
 }
