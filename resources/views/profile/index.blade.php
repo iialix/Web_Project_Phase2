@@ -52,7 +52,7 @@
                 <div class="rating-item profile-rating-item" id="profile-rating-{{ $rating->id }}">
                     <div class="profile-rating-poster">
                         <img
-                            src="{{ $rating->movie->poster ? asset('storage/uploads/' . $rating->movie->poster) : 'https://placehold.co/80x120/1a1a2e/e94560?text=?' }}"
+                            src="{{ $rating->movie->poster ? asset('uploads/' . $rating->movie->poster) : 'https://placehold.co/80x120/1a1a2e/e94560?text=?' }}"
                             alt="{{ e($rating->movie->name) }}"
                         >
                     </div>

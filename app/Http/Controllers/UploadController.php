@@ -37,13 +37,13 @@ class UploadController extends Controller
         $file = $request->file('poster');
         $filename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $file->extension();
 
-        $path = $file->storeAs('public/uploads', $filename);
+        $path = $file->move(public_path('uploads'), $filename);
 
         if ($path) {
             return response()->json([
                 'success'  => true,
                 'filename' => $filename,
-                'path'     => 'storage/uploads/' . $filename,
+                'path'     => 'uploads/' . $filename,
             ]);
         }
 
@@ -95,13 +95,15 @@ class UploadController extends Controller
 
         $filename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
 
-        // Save to storage
-        Storage::put('public/uploads/' . $filename, $imageData);
+        // Save to public/uploads
+        $uploadDir = public_path('uploads');
+        if (!is_dir($uploadDir)) { mkdir($uploadDir, 0755, true); }
+        file_put_contents($uploadDir . DIRECTORY_SEPARATOR . $filename, $imageData);
 
         return response()->json([
             'success'  => true,
             'filename' => $filename,
-            'path'     => 'storage/uploads/' . $filename,
+            'path'     => 'uploads/' . $filename,
         ]);
     }
 }

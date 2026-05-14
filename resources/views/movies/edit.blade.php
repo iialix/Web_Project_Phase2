@@ -19,7 +19,7 @@
         @if($movie->poster)
         <div class="current-poster-preview">
             <h4>Current Poster</h4>
-            <img src="{{ asset('storage/uploads/' . $movie->poster) }}" alt="Current poster" class="current-poster-img">
+            <img src="{{ asset('uploads/' . $movie->poster) }}" alt="Current poster" class="current-poster-img">
         </div>
         @endif
 

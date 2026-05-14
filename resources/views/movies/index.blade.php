@@ -50,7 +50,7 @@
 
                     <div class="poster-wrapper">
                         <img
-                            src="{{ $movie->poster ? asset('storage/uploads/' . $movie->poster) : 'https://placehold.co/300x450/1a1a2e/e94560?text=No+Poster' }}"
+                            src="{{ $movie->poster ? asset('uploads/' . $movie->poster) : 'https://placehold.co/300x450/1a1a2e/e94560?text=No+Poster' }}"
                             alt="{{ e($movie->name) }}"
                             loading="lazy"
                         >

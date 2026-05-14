@@ -81,7 +81,7 @@ class MovieController extends Controller
         if ($request->hasFile('poster')) {
             $file = $request->file('poster');
             $posterFilename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $file->extension();
-            $file->storeAs('public/uploads', $posterFilename);
+            $file->move(public_path('uploads'), $posterFilename);
         } elseif ($request->filled('tmdb_poster_url')) {
             $posterFilename = $this->downloadTmdbPoster($request->input('tmdb_poster_url'));
         }
@@ -181,7 +181,7 @@ class MovieController extends Controller
         if ($request->hasFile('poster')) {
             $file = $request->file('poster');
             $posterFilename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $file->extension();
-            $file->storeAs('public/uploads', $posterFilename);
+            $file->move(public_path('uploads'), $posterFilename);
         }
 
         $movie->update([
@@ -274,7 +274,9 @@ class MovieController extends Controller
         }
 
         $filename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
-        \Illuminate\Support\Facades\Storage::put('public/uploads/' . $filename, $imageData);
+        $uploadDir = public_path('uploads');
+        if (!is_dir($uploadDir)) { mkdir($uploadDir, 0755, true); }
+        file_put_contents($uploadDir . DIRECTORY_SEPARATOR . $filename, $imageData);
 
         return $filename;
     }
