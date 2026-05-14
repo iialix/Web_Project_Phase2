@@ -3,45 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Movie Tracker')</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="@yield('meta_description', 'Discover, rate, and track your favorite movies with Movie Tracker.')">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('style.css') }}">
+
+    @stack('styles')
 </head>
 <body>
-    <header class="site-header">
-        <div class="logo">Movie Tracker</div>
-        <nav class="main-nav">
-            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-            <a href="{{ route('movies.index') }}" class="{{ request()->routeIs('movies.*') ? 'active' : '' }}">Movies</a>
-            @auth
-                @if(Auth::user()->isAdmin())
-                    <a href="{{ route('movies.create') }}">Add Movie</a>
-                @endif
-                <a href="{{ route('wishlist.index') }}">Wishlist</a>
-                <a href="{{ route('profile') }}">Profile</a>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
-            @else
-                <a href="{{ route('login') }}">Login</a>
-            @endauth
-        </nav>
-    </header>
+
+    @include('layouts.partials.header')
+
     <main class="main-content">
         @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success" id="flash-success">
+                <span>✓</span> {{ session('success') }}
+            </div>
         @endif
         @if(session('error'))
-            <div class="alert alert-error">{{ session('error') }}</div>
+            <div class="alert alert-error" id="flash-error">
+                <span>✕</span> {{ session('error') }}
+            </div>
         @endif
+
         @yield('content')
     </main>
-    <footer class="site-footer">
-        <div class="footer-content">
-            <p>&copy; 2026 Movie Tracker. All rights reserved.</p>
-        </div>
-    </footer>
+
+    @include('layouts.partials.footer')
+
+    <!-- Scripts -->
     <script src="{{ asset('validation.js') }}"></script>
     <script src="{{ asset('API_Ops.js') }}"></script>
-    <script src="{{ asset('main.js') }}"></script>
+    <script src="{{ asset('app.js') }}"></script>
+
+    @stack('scripts')
+
+    <script>
+        // Auto-dismiss flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(el => {
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-10px)';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 4000);
+    </script>
 </body>
 </html>
