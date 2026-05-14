@@ -12,7 +12,7 @@
 
     <div class="auth-card">
         <div class="auth-card-header">
-            <div class="auth-logo">🎬</div>
+            <div class="auth-logo">MovieTracker</div>
             <h1>Welcome Back</h1>
             <p>Sign in to your MovieTracker account</p>
         </div>
@@ -23,7 +23,6 @@
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <div class="input-icon-wrapper">
-                    <span class="input-icon">✉</span>
                     <input
                         type="email"
                         id="email"
@@ -41,7 +40,6 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="input-icon-wrapper">
-                    <span class="input-icon">🔒</span>
                     <input
                         type="password"
                         id="password"
@@ -50,7 +48,7 @@
                         autocomplete="current-password"
                         required
                     >
-                    <button type="button" class="toggle-password" onclick="togglePwd('password', this)" tabindex="-1">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePwd('password', this)" tabindex="-1">Show</button>
                 </div>
                 @error('password') <span class="error-msg active">{{ $message }}</span> @enderror
                 <span class="error-msg" id="password-error"></span>
@@ -58,7 +56,6 @@
 
             <button type="submit" class="btn-primary btn-full" id="login-btn">
                 Sign In
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
         </form>
 
@@ -73,8 +70,8 @@
 <script>
 function togglePwd(id, btn) {
     const inp = document.getElementById(id);
-    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
-    else { inp.type = 'password'; btn.textContent = '👁'; }
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
+    else { inp.type = 'password'; btn.textContent = 'Show'; }
 }
 
 document.getElementById('login-form').addEventListener('submit', function(e) {

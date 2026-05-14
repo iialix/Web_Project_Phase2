@@ -268,12 +268,56 @@ document.querySelectorAll('#edit-star-widget input').forEach(inp => {
     });
 });
 
-// ── Rating form client-side validation ────────
-document.getElementById('rating-submit-form')?.addEventListener('submit', (e) => {
+// ── Rating form submission (AJAX) ────────────
+document.getElementById('rating-submit-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
     const selected = document.querySelector('#star-rating-widget input:checked');
     if (!selected) {
-        e.preventDefault();
         showToast('Please select a rating before submitting.', 'error');
+        return;
+    }
+
+    const submitButton = document.getElementById('submit-rating-btn');
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+    }
+
+    const formData = {
+        movieId: MOVIE_ID,
+        rating: selected.value,
+        description: document.getElementById('description')?.value || ''
+    };
+
+    try {
+        const response = await fetch('/ratings', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            showToast(data.message || 'Rating added successfully.', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 400);
+        } else {
+            showToast(data.error || 'Failed to add rating.', 'error');
+        }
+    } catch (error) {
+        showToast('Unable to submit rating. Please try again.', 'error');
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Submit Review';
+        }
     }
 });
 

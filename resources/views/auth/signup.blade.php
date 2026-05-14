@@ -12,7 +12,7 @@
 
     <div class="auth-card">
         <div class="auth-card-header">
-            <div class="auth-logo">🎬</div>
+            <div class="auth-logo">MovieTracker</div>
             <h1>Create Account</h1>
             <p>Join MovieTracker and start tracking today</p>
         </div>
@@ -23,7 +23,6 @@
             <div class="form-group">
                 <label for="userName">Username</label>
                 <div class="input-icon-wrapper">
-                    <span class="input-icon">👤</span>
                     <input
                         type="text"
                         id="userName"
@@ -42,7 +41,6 @@
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <div class="input-icon-wrapper">
-                    <span class="input-icon">✉</span>
                     <input
                         type="email"
                         id="email"
@@ -61,7 +59,6 @@
             <div class="form-group">
                 <label for="password">Password <span class="hint-text">(min. 6 characters)</span></label>
                 <div class="input-icon-wrapper">
-                    <span class="input-icon">🔒</span>
                     <input
                         type="password"
                         id="password"
@@ -70,7 +67,7 @@
                         autocomplete="new-password"
                         required
                     >
-                    <button type="button" class="toggle-password" onclick="togglePwd('password', this)" tabindex="-1">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePwd('password', this)" tabindex="-1">Show</button>
                 </div>
                 @error('password') <span class="error-msg active">{{ $message }}</span> @enderror
                 <span class="error-msg" id="password-error"></span>
@@ -83,7 +80,6 @@
             <div class="form-group">
                 <label for="birthDate">Date of Birth <span class="hint-text">(must be 13+)</span></label>
                 <div class="input-icon-wrapper">
-                    <span class="input-icon">📅</span>
                     <input
                         type="date"
                         id="birthDate"
@@ -99,7 +95,6 @@
 
             <button type="submit" class="btn-primary btn-full">
                 Create Account
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
         </form>
 
@@ -114,8 +109,8 @@
 <script>
 function togglePwd(id, btn) {
     const inp = document.getElementById(id);
-    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
-    else { inp.type = 'password'; btn.textContent = '👁'; }
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
+    else { inp.type = 'password'; btn.textContent = 'Show'; }
 }
 
 // Password strength meter
