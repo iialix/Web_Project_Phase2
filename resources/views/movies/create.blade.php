@@ -146,7 +146,7 @@ async function searchTMDB() {
 
         if (data.success && data.data && data.data.length > 0) {
             resultsEl.innerHTML = data.data.slice(0, 8).map(m => `
-                <div class="tmdb-result-card" onclick="selectTMDBMovie(${JSON.stringify(m).replace(/"/g,'&quot;')})">
+                <div class="tmdb-result-card" onclick="selectTMDBMovie(${m.id})">
                     <img src="${m.poster || 'https://placehold.co/100x150/1a1a2e/e94560?text=No+Img'}" alt="${m.title}" loading="lazy">
                     <h4>${m.title}</h4>
                     <p>${m.year} · ⭐ ${m.vote_average}</p>
@@ -155,25 +155,56 @@ async function searchTMDB() {
         } else {
             resultsEl.innerHTML = '<p class="tmdb-no-results">No results found on TMDB.</p>';
         }
-    } catch {
+    } catch (err) {
         resultsEl.innerHTML = '';
         errEl.style.display = 'block';
     }
 }
 
-function selectTMDBMovie(movie) {
-    document.getElementById('name').value        = movie.title || '';
-    document.getElementById('description').value = movie.overview || '';
-    document.getElementById('categories').value  = movie.genres ? movie.genres.join(', ') : 'Drama';
+async function selectTMDBMovie(tmdbId) {
+    const resultsEl = document.getElementById('tmdb-results');
+    const errEl     = document.getElementById('tmdb-error-msg');
 
-    if (movie.poster) {
-        document.getElementById('poster-preview-img').src = movie.poster;
-        document.getElementById('tmdb-poster-url').value  = movie.poster;
-        document.getElementById('poster-preview-section').style.display = 'block';
+    // Show loading state in results area
+    resultsEl.innerHTML = '<div class="spinner"></div>';
+
+    try {
+        const res  = await fetch(`/api/tmdb/${tmdbId}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (!data.success || !data.data) {
+            errEl.textContent = '⚠ ' + (data.error || 'Could not fetch movie details. Please fill in manually.');
+            errEl.style.display = 'block';
+            resultsEl.innerHTML = '';
+            return;
+        }
+
+        const movie = data.data;
+
+        // Auto-fill form fields with TMDB data
+        document.getElementById('name').value        = movie.title || '';
+        document.getElementById('description').value = movie.overview || '';
+        document.getElementById('categories').value  = (movie.genres && movie.genres.length > 0)
+            ? movie.genres.join(', ')
+            : 'Drama';
+
+        // Show poster preview if available
+        if (movie.poster_path) {
+            document.getElementById('poster-preview-img').src = movie.poster_path;
+            document.getElementById('tmdb-poster-url').value  = movie.poster_path;
+            document.getElementById('poster-preview-section').style.display = 'block';
+        }
+
+        resultsEl.innerHTML = '';
+        showToast('Movie details filled from TMDB!', 'success');
+
+    } catch (err) {
+        resultsEl.innerHTML = '';
+        errEl.textContent = '⚠ TMDB API is unavailable right now. Please fill in details manually.';
+        errEl.style.display = 'block';
     }
-
-    document.getElementById('tmdb-results').innerHTML = '';
-    showToast('Movie details filled from TMDB!', 'success');
 }
 
 function clearPosterPreview() {
