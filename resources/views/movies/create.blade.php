@@ -28,16 +28,6 @@
             <div id="tmdb-results" class="tmdb-results"></div>
         </div>
 
-        {{-- ─── Poster Preview ──────────────────────── --}}
-        <div id="poster-preview-section" class="poster-preview" style="display:none;">
-            <h3>📸 Selected Poster</h3>
-            <img id="poster-preview-img" src="" alt="Poster Preview">
-            <div class="poster-actions">
-                <button type="button" class="btn-secondary btn-sm" onclick="clearPosterPreview()">✕ Clear</button>
-            </div>
-            <input type="hidden" id="tmdb-poster-url" name="tmdb_poster_url" value="">
-        </div>
-
         {{-- ─── Movie Form ──────────────────────────── --}}
         <form
             action="{{ route('movies.store') }}"
@@ -47,6 +37,16 @@
             novalidate
         >
             @csrf
+
+            {{-- ─── Poster Preview ──────────────────────── --}}
+            <div id="poster-preview-section" class="poster-preview" style="display:none;">
+                <h3>📸 Selected Poster</h3>
+                <img id="poster-preview-img" src="" alt="Poster Preview">
+                <div class="poster-actions">
+                    <button type="button" class="btn-secondary btn-sm" onclick="clearPosterPreview()">✕ Clear</button>
+                </div>
+                <input type="hidden" id="tmdb-poster-url" name="tmdb_poster_url" value="">
+            </div>
 
             <div class="form-group">
                 <label for="name">Movie Name <span class="required">*</span></label>
